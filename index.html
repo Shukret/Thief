@@ -66,13 +66,13 @@
       function initializeUnity() {
           const script = document.createElement("script");
           script.src = loaderUrl;
+          vkBridge.send("VKWebAppInit", {});
           script.onload = () => {
             createUnityInstance(canvas, config, (progress) => {
               progressBarFull.style.width = 100 * progress + "%";
               document.getElementById('unity-progress-text').textContent = Math.floor(progress * 100) + "%";
             }).then(unityInstance => {
               myGameInstance = unityInstance;
-              vkBridge.send("VKWebAppInit", {});
 
               vkBridge.send('VKWebAppStorageGet', {
                 keys: ['PlayerData']
