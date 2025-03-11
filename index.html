@@ -65,7 +65,6 @@
       }
 
       function initializeUnity() {
-        return new Promise((resolve, reject) => {
           const script = document.createElement("script");
           script.src = loaderUrl;
           script.onload = () => {
@@ -122,10 +121,6 @@
               }
             }
           });
-
-        }).catch((message) => {
-          alert(message);
-        });
         
           document.body.appendChild(script);
       };
