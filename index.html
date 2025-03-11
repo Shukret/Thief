@@ -64,70 +64,44 @@
         warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
       }
 
-      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        var meta = document.createElement('meta');
-        meta.name = 'viewport';
-        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
-        document.getElementsByTagName('head')[0].appendChild(meta);
-        container.className = "unity-mobile";
+      function initializeUnity() {
+        return new Promise((resolve, reject) => {
+          const script = document.createElement("script");
+          script.src = loaderUrl;
+          script.onload = () => {
+            createUnityInstance(canvas, config, (progress) => {
+              progressBarFull.style.width = 100 * progress + "%";
+              document.getElementById('unity-progress-text').textContent = Math.floor(progress * 100) + "%";
+            }).then(unityInstance => {
+              myGameInstance = unityInstance;
+              vkBridge.send("VKWebAppInit", {});
 
-        canvas.style.width = "100%";
-        canvas.style.height = "100%";
-      } else {
-        canvas.style.width = "100%";
-        canvas.style.height = "100%";
-      }
+              vkBridge.send('VKWebAppStorageGet', {
+                keys: ['PlayerData']
+              }).then((data) => {
+                if (data.keys) {
+                  console.log("LOAD");
+                  console.log(data.keys[0].value);
+                  if (data.keys[0].value !== null && data.keys[0].value != '') {
+                    myGameInstance.SendMessage('Init', 'SetPlayerData', data.keys[0].value);
+                  } else {
+                    console.log("First load");
+                    myGameInstance.SendMessage('Init', 'FirstLoadVK');
+                  }
+                }
+              }).catch((error) => {
+                console.log(error);
+              });
 
-      canvas.style.width = "100%";
-      canvas.style.height = "100%";
-
-      loadingBar.style.display = "block";
-
-      var script = document.createElement("script");
-      script.src = loaderUrl;
-
-      script.onload = () => {
-        if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-          progressBarEmpty.style.display = "none";
-          progressBarEmptyMobile.style.display = "block";
-        } else {
-          progressBarEmpty.style.display = "block";
-          progressBarEmptyMobile.style.display = "none";
-        }
-
-        createUnityInstance(canvas, config, (progress) => {
-          if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-            progressBarFullMobile.style.width = 100 * progress + "%";
-          } else {
-            progressBarFull.style.width = 100 * progress + "%";
-          }
-          document.getElementById('unity-progress-text').textContent = Math.floor(progress * 100) + "%";
-        }).then((unityInstance) => {
-          myGameInstance = unityInstance;
-          vkBridge.send("VKWebAppInit", {});
-
-          vkBridge.send('VKWebAppStorageGet', {
-            keys: ['PlayerData']
-          }).then((data) => {
-            if (data.keys) {
-              console.log("LOAD");
-              console.log(data.keys[0].value);
-              if (data.keys[0].value !== null && data.keys[0].value != '') {
-                myGameInstance.SendMessage('Init', 'SetPlayerData', data.keys[0].value);
-              } else {
-                console.log("First load");
-                myGameInstance.SendMessage('Init', 'FirstLoadVK');
+              if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+                myGameInstance.SendMessage('Init', 'ItIsMobile');
               }
-            }
-          }).catch((error) => {
-            console.log(error);
-          });
-
-          loadingBar.style.display = "none";
-
-          if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-            myGameInstance.SendMessage('Init', 'ItIsMobile');
-          }
+              
+              loadingBar.style.display = "none";
+              resolve();
+            }).catch(reject);
+          };
+          script.onerror = reject;
 
           // Добавляем обработчики событий для сворачивания и закрытия игры
           vkBridge.subscribe((event) => {
@@ -152,9 +126,9 @@
         }).catch((message) => {
           alert(message);
         });
+        
+          document.body.appendChild(script);
       };
-
-      document.body.appendChild(script);
     </script>
   </body>
 </html>
