@@ -1,35 +1,124 @@
-body { padding: 0; margin: 0 }
-#unity-container { position: absolute }
-#unity-container.unity-desktop { left: 50%; top: 50%; transform: translate(-50%, -50%) }
-#unity-container.unity-mobile { width: 100%; height: 100% }
-#unity-canvas { background: #231F20 }
-.unity-mobile #unity-canvas { width: 100%; height: 100% }
-#unity-loading-bar { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: none }
-#unity-logo { 
-    /* width: 500px; Ð¨Ð¸Ñ€Ð¸Ð½Ð° Ð¸Ð·Ð¾Ð±Ñ€Ð°Ð¶ÐµÐ½Ð¸Ñ */
-    height: 150px; /* Ð’Ñ‹ÑÐ¾Ñ‚Ð° Ð¸Ð·Ð¾Ð±Ñ€Ð°Ð¶ÐµÐ½Ð¸Ñ */
-    background: url('unity-logo-dark.png'); /* ÐŸÑ€Ð¾Ð¿Ð¸ÑÑ‹Ð²Ð°ÐµÐ¼ Ð¿ÑƒÑ‚ÑŒ Ðº Ñ„Ð°Ð¹Ð»Ñƒ */
-    background-repeat: no-repeat; /* ÐÐµ Ð¿Ð¾Ð²Ñ‚Ð¾Ñ€ÑÐµÐ¼ */
-    background-size: contain; /*  Ð Ð°Ð·Ð¼ÐµÑ€ Ñ„Ð¾Ð½Ð° */
-    background-position: center; /* ÐŸÐ¾Ð·Ð¸Ñ†Ð¸Ñ ÐºÐ°Ñ€Ñ‚Ð¸Ð½ÐºÐ¸Ð¿Ð¾ Ñ†ÐµÐ½Ñ‚Ñ€Ñƒ */
+body {
+    padding: 0;
+    margin: 0;
+    background: linear-gradient(135deg, #1e1e2f, #2a2a40);
+    overflow: hidden;
+    font-family: 'Arial', sans-serif;
+    animation: backgroundAnimation 10s infinite alternate;
 }
-#unity-progress-bar-empty { 
-    width: 400px; height: 35px; 
-    margin-top: 10px; margin-left: 6.5px; 
-    background: url('progress-bar-empty-dark.png');
-    background-repeat: no-repeat; /* ÐÐµ Ð¿Ð¾Ð²Ñ‚Ð¾Ñ€ÑÐµÐ¼ */
-    background-size: 400px 30px;
-    background-position: center; /* ÐŸÐ¾Ð·Ð¸Ñ†Ð¸Ñ ÐºÐ°Ñ€Ñ‚Ð¸Ð½ÐºÐ¸Ð¿Ð¾ Ñ†ÐµÐ½Ñ‚Ñ€Ñƒ */
+
+@keyframes backgroundAnimation {
+    0% {
+        background: linear-gradient(135deg, #1e1e2f, #2a2a40);
+    }
+    100% {
+        background: linear-gradient(135deg, #2a2a40, #1e1e2f);
+    }
 }
-#unity-progress-bar-full { height: 28px; margin-right: 5px;
-    background: url('progress-bar-full-dark.png');
-    background-repeat: no-repeat; /* ÐÐµ Ð¿Ð¾Ð²Ñ‚Ð¾Ñ€ÑÐµÐ¼ */
-    background-size: 100; /* Ð Ð°Ð·Ð¼ÐµÑ€ Ñ„Ð¾Ð½Ð° */
-    background-position: top 7px left 5px;
+
+#particles-canvas {
+    position: fixed; /* Используем fixed, чтобы частицы не скроллились */
+    width: 100%;
+    height: 100%;
+    z-index: 0; /* Частицы на заднем плане */
+    top: 0;
+    left: 0;
+    background: transparent; /* Убедимся, что фон прозрачный */
 }
-#unity-footer { position: relative }
-.unity-mobile #unity-footer { display: none }
-#unity-webgl-logo { float:left; width: 204px; height: 38px; background: url('webgl-logo.png') no-repeat center }
-#unity-build-title { float: right; margin-right: 10px; line-height: 38px; font-family: arial; font-size: 18px }
-#unity-fullscreen-button { float: right; width: 38px; height: 38px; background: url('fullscreen-button.png') no-repeat center }
-#unity-warning { position: absolute; left: 50%; top: 5%; transform: translate(-50%); background: white; padding: 10px; display: none }
+
+#unity-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2; /* Контент поверх частиц */
+}
+
+#unity-canvas {
+    background: #231F20;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+#unity-loading-bar {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px; /* Расстояние между гифкой и слайдером */
+    width: 100%; /* Растягиваем контейнер на всю ширину */
+    z-index: 3; /* Прогресс-бар и логотип поверх частиц */
+}
+
+#unity-logo {
+    height: 150px;
+    width: 150px;
+    background: url('loading-animation.gif') no-repeat center center;
+    background-size: contain;
+    margin: 0 auto; /* Центрируем гифку по горизонтали */
+}
+
+#unity-progress-bar-empty {
+    width: 400px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+    margin: 0 auto; /* Центрируем слайдер по горизонтали */
+}
+
+#unity-progress-bar-full {
+    height: 100%;
+    background: linear-gradient(90deg, #ff7e5f, #feb47b);
+    border-radius: 10px;
+    transition: width 0.3s ease;
+    animation: pulseProgress 1s infinite alternate; /* Анимация прогресс-бара */
+}
+
+@keyframes pulseProgress {
+    0% { opacity: 1; }
+    100% { opacity: 0.7; }
+}
+
+#unity-progress-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 12px;
+}
+
+#unity-warning {
+    position: absolute;
+    left: 50%;
+    top: 5%;
+    transform: translate(-50%);
+    background: rgba(255, 59, 48, 0.9);
+    padding: 10px 20px;
+    border-radius: 5px;
+    color: white;
+    display: none;
+    box-shadow: 0 0 10px rgba(255, 59, 48, 0.5);
+}
+
+.unity-mobile #unity-canvas {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+}
+
+.unity-mobile #unity-loading-bar {
+    width: 80%;
+}
+
+.unity-mobile #unity-progress-bar-empty {
+    width: 100%;
+}
